@@ -67,7 +67,6 @@ r=60;
 h=fspecial('disk',r); h(h>0)=1;
 lowpass_r60 = zeros([height],[width]);
 lowpass_r60([[height]/2-r:[height]/2+r],[[width]/2-r:[width]/2+r])=h;
-
 lena_gaus_fourier_lowpass_r60 = imfilter(lena_gaus_fourier,lowpass_r60);
 lena_gaus_inverse_1 = ifft2(lena_gaus_fourier_lowpass_r60);
 figure
@@ -80,6 +79,7 @@ lowpass_r20 = zeros([height],[width]);
 lowpass_r20([[height]/2-r:[height]/2+r],[[width]/2-r:[width]/2+r])=h;
 lena_gaus_fourier_lowpass_r20 = imfilter(lena_gaus_fourier,lowpass_r20);
 lena_gaus_inverse_2 = ifft2(lena_gaus_fourier_lowpass_r20);
+
 figure
 imshow(lena_gaus_inverse_2);title('Denoised Lena with Lowpass r=20');
 lena_gaus_inverse_psnr_2 = psnr(lena_gaus_inverse_2, lena_in)
@@ -94,4 +94,26 @@ figure
 imshow(lena_gaus_inverse_3);title('Denoised Lena with Gaussian Filter');
 lena_gaus_inverse_psnr_3 = psnr(lena_gaus_inverse_3, lena_in)
 
-%% Filter Design: TBC
+%% Filter Design
+frequnoisy = imread('frequnoisy.tif');
+figure;
+imshow(frequnoisy); title('Original Frequnoisy.tif');
+[M,N]=size(frequnoisy);
+F=fft2(double(frequnoisy)); % taking the fast fourier transform of the image
+F=fftshift(F);
+log_F = log(F);
+figure;
+imshow(log_F, []); title('Fourier Spectra of Frequnoisy Image');
+notch_filter = ones(size(F,1),size(F,2));
+
+notch_filter(65,65)=0;
+notch_filter(193,193)=0;
+notch_filter(139,153)=0;
+notch_filter(119,105)=0;
+figure;
+imshow(notch_filter); title('Notch Filter');
+G = F.*notch_filter;
+G=ifftshift(G);
+g=real(ifft2(double(G)));
+figure;
+imshow(g,[ ]); title('Denoised Image');

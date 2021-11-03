@@ -25,7 +25,7 @@ test_rot_fourier = abs(test_rot_fourier);%amplitude
 figure
 imshow(test_rot_fourier,[]); title('Fourier Spectra of Rotated Test Image');
 
-%% amplitude and phase: Do we need to shift the origin?  How to reconstruct?
+%% amplitude and phase
 lena = imread('lena.tiff');
 lena_grey = rgb2gray(lena);
 lena_fourier = fft2(lena_grey);%fourier transform

@@ -37,24 +37,26 @@ imshow(inversed_f_gau); title('inversed blurred image with gaussian noise');
 inversed_f_gau_psnr = psnr(abs(inversed_f_gau), f)
 
 % Wiener filter
-psf = circshift(h_d, [-5,-5]);
 estimated_nsr = 0.002 / var(f_gau(:));
-f_wiener = deconvwnr(f_gau, psf, estimated_nsr);
+f_wiener = deconvwnr(f_gau, fftshift(h), estimated_nsr);
+
 figure
 imshow(f_wiener); title('Wiener filtered blurred image with gaussian noise');
 f_wiener_psnr = psnr(abs(f_wiener), f)
 
 %% Adaptive Filtering
+f = im2double(imread('cameraman.tif'));
 degraded = im2double(imread('degraded.tif'));
 figure
 imshow(degraded); title('degraded image');
 
 local_mean = colfilt(degraded, [5 5], 'sliding', @mean);
 local_var = colfilt(degraded, [5 5], 'sliding', @var);
+% flat_region values come from reading the X and Y coordinates from Data Tip of the top right corner of the original image
 flat_region = degraded(1:100, 180:256);
 noise_var = var(flat_region(:));
 
-K = (local_var - noise_var)/local_var;
+K = (local_var - noise_var)./local_var;
 f_est = K.*degraded+(1-K).*local_mean;
 figure
 imshow(f); title('original image');
@@ -71,42 +73,45 @@ g_filter_norm = g_filter ./ g_filter_max;
 
 degraded_fourier = fftshift(fft2(degraded));
 filtered_by_gau = degraded_fourier.*g_filter_norm;
-filtered_by_gau = abs(ifft2(filtered_by_gau));
+filtered_by_gau = abs(ifft2(ifftshift(filtered_by_gau)));
+figure
 imshow(filtered_by_gau); title('denoised image using Gaussian lowpass filter');
 filtered_by_gau_psnr = psnr(filtered_by_gau, f)
 
 % higher and lower noise variance
 noise_var_higher = 0.0209;
-K2 = (local_var - noise_var_higher)/local_var;
+K2 = (local_var - noise_var_higher)./local_var;
 f_est2 = K2.*degraded+(1-K2).*local_mean;
 figure
 imshow(f_est2); title('denoised image using Lee filter with noise variance = 0.0209');
 filtered_by_Lee_higher_var_psnr = psnr(f_est2, f)
 
 noise_var_lower = 0.0009;
-K3 = (local_var - noise_var_lower)/local_var;
+K3 = (local_var - noise_var_lower)./local_var;
 f_est3 = K3.*degraded+(1-K3).*local_mean;
 figure
 imshow(f_est3); title('denoised image using Lee filter with noise variance = 0.0009');
 filtered_by_Lee_lower_var_psnr = psnr(f_est3, f)
 
-% bigger window
-local_mean = colfilt(degraded, [3 3], 'sliding', @mean);
-local_var = colfilt(degraded, [3 3], 'sliding', @var);
-
-K = (local_var - noise_var)/local_var;
-f_est = K.*degraded+(1-K).*local_mean;
-figure
-imshow(f_est); title('denoised with Lee filter using 3x3 window');
-filtered_by_Lee_psnr_3x3 = psnr(f_est, f)
-
 % smaller window
+% The 3x3 window gives psnr = NaN due to a "NaN/Inf breakpoint hit for psnr.m on line 75" error. 
+% Therefore, a 4x4 window was used
+local_mean = colfilt(degraded, [4 4], 'sliding', @mean);
+local_var = colfilt(degraded, [4 4], 'sliding', @var);
+
+K = (local_var - noise_var)./local_var;
+f_est4 = K.*degraded+(1-K).*local_mean;
+filtered_by_Lee_psnr_4x4 = psnr(f_est4, f)
+figure
+imshow(f_est4); title('denoised with Lee filter using 4x4 window');
+
+% bigger window
 local_mean = colfilt(degraded, [7 7], 'sliding', @mean);
 local_var = colfilt(degraded, [7 7], 'sliding', @var);
 
-K = (local_var - noise_var)/local_var;
-f_est = K.*degraded+(1-K).*local_mean;
+K = (local_var - noise_var)./local_var;
+f_est5 = K.*degraded+(1-K).*local_mean;
 figure
-imshow(f_est); title('denoised with Lee filter using 7x7 window');
-filtered_by_Lee_psnr_7x7 = psnr(f_est, f)
+imshow(f_est5); title('denoised with Lee filter using 7x7 window');
+filtered_by_Lee_psnr_7x7 = psnr(f_est5, f)
 

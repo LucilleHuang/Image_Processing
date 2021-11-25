@@ -21,7 +21,8 @@ r_tf = abs(fftshift(fft2(f_r)));
 figure(4)
 imshow(r_tf, []); title('Fourier Spectra of Rotated Test Image')
 
-lena = imread('lena.tif');
+
+lena = imread('lena.tiff');
 figure(5)
 imshow(lena); title('Original Lena Image');
 lena = rgb2gray(lena);
@@ -29,8 +30,8 @@ lena_tf = fftshift(fft2(lena));
 lena_amp = abs(lena_tf);
 lena_phase = lena_tf./lena_amp;
 
-i_lena_amp = log(abs(ifftshift(ifft2(lena_amp))));
-i_lena_phase = ifft2(lena_phase);
+i_lena_amp = log(abs(ifft2(ifftshift(lena_amp))));
+i_lena_phase = ifft2(ifftshift(lena_phase));
 
 figure(6)
 imshow(i_lena_amp, []); title('Reconstructed Lena with Amplitude');

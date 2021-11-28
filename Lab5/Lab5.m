@@ -2,9 +2,7 @@ clc;
 clear all;
 close all;
 
-%% 2 Chroma Subsampling use grey or colourful?
-
-%% split to Y, Cb and Cr channels - grey
+%% split to Y, Cb and Cr channels
 RGB = imread('peppers.png');
 YCBCR = rgb2ycbcr(RGB);
 [Y, Cb, Cr] = imsplit(YCBCR);
@@ -175,7 +173,6 @@ figure
 imshow(f,[]); title('original');
 
 %% 5 Quatization
-T = dctmtx(8);
 lena = imread('lena.tiff');
 f = double(rgb2gray(lena));
 

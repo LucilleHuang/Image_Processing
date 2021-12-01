@@ -80,7 +80,7 @@ recombined_2 = cat(3, yImage_upsamp, Cb, Cr);
 recombined_2_RGB = ycbcr2rgb(recombined_2);
 
 figure;
-imshow(recombined_2, []);
+imshow(recombined_2_RGB);
 title('Recombined 2');
 
 %% 3 Colour Segmentation - R2021a cannot run this section, only R2021b works. R2021a gives error: Undefined function 'kmeans' for input arguments of type 'double'.
@@ -169,7 +169,7 @@ f_thresh = floor(blkproc(F_thresh, [8 8], 'P1*x*P2',T',T))+128;
 
 figure
 imshow(f_thresh, []); title('reconstruct 3');
-reconstruct_psnr = psnr(f_thresh,f);
+reconstruct_psnr = psnr(f_thresh,f,255)
 
 figure
 imshow(f,[]); title('original');
@@ -195,7 +195,7 @@ for i = 1:size(P1,2)
     unquantized_DCT = round(blkproc(quantized_DCT, [8 8], 'x.*P1', P1(i)*Z));
     reconstruct_Z = floor(blkproc(unquantized_DCT, [8 8], 'P1*x*P2',T',T))+128;
 
-    figure
-    imshow(reconstruct_Z,[]); title(sprintf('reconstruct %dZ', P1(i)));
-    reconstruct_psnr = psnr(reconstruct_Z,f)
+%     figure
+%     imshow(reconstruct_Z,[]); title(sprintf('reconstruct %dZ', P1(i)));
+    reconstruct_psnr = psnr(reconstruct_Z,f,255)
 end

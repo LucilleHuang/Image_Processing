@@ -61,7 +61,7 @@ crImage_upsamp = imresize(crImage_reduced, 2);
 % imshow(crImage_upsamp, []);
 % title('Cr Image2', 'FontSize', 16);
 
-recombined = cat(3, Y, Cb, Cr);
+recombined = cat(3, Y, cbImage_upsamp, crImage_upsamp);
 recombined_RGB = ycbcr2rgb(recombined);
 
 figure;
@@ -77,6 +77,8 @@ yImage_reduced = imresize(Y, 1/2);
 yImage_upsamp = imresize(yImage_reduced, 2);
 
 recombined_2 = cat(3, yImage_upsamp, Cb, Cr);
+recombined_2_RGB = ycbcr2rgb(recombined_2);
+
 figure;
 imshow(recombined_2, []);
 title('Recombined 2');
@@ -175,7 +177,7 @@ imshow(f,[]); title('original');
 %% 5 Quatization
 lena = imread('lena.tiff');
 f = double(rgb2gray(lena));
-
+T = dctmtx(8);
 DCT = floor(blkproc(f-128,[8 8],'P1*x*P2',T,T'));
 
 Z = [16 11 10 16 24 40 51 61;
@@ -189,11 +191,11 @@ Z = [16 11 10 16 24 40 51 61;
 
 P1 = [1,3,5,10];
 for i = 1:size(P1,2)
-    quantized_DCT = round(blkproc(DCT, [8 8], 'P1/x', P1(i)*Z));
-    unquantized_DCT = round(blkproc(quantized_DCT, [8 8], 'P1*x', P1(i)*Z));
+    quantized_DCT = round(blkproc(DCT, [8 8], 'x./P1', P1(i)*Z));
+    unquantized_DCT = round(blkproc(quantized_DCT, [8 8], 'x.*P1', P1(i)*Z));
     reconstruct_Z = floor(blkproc(unquantized_DCT, [8 8], 'P1*x*P2',T',T))+128;
 
     figure
     imshow(reconstruct_Z,[]); title(sprintf('reconstruct %dZ', P1(i)));
-    reconstruct_psnr = psnr(reconstruct_Z,f);
+    reconstruct_psnr = psnr(reconstruct_Z,f)
 end

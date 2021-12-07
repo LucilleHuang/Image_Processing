@@ -41,11 +41,11 @@ title('Cr Image', 'FontSize', 16);
 % end
 
 %% Chroma subsampling
-cbImage_reduced = imresize(Cb, 1/2);
-crImage_reduced = imresize(Cr, 1/2);
+cbImage_reduced = imresize(Cb, 1/2, "bilinear");
+crImage_reduced = imresize(Cr, 1/2, "bilinear");
 
-cbImage_upsamp = imresize(cbImage_reduced, 2);
-crImage_upsamp = imresize(crImage_reduced, 2);
+cbImage_upsamp = imresize(cbImage_reduced, 2, "bilinear");
+crImage_upsamp = imresize(crImage_reduced, 2, "bilinear");
 
 % figure;
 % imshow(cbImage_reduced, []);
@@ -73,8 +73,8 @@ imshow(recombined_RGB);
 title('Recombined');
 
 %% Luma sub-sampling
-yImage_reduced = imresize(Y, 1/2);
-yImage_upsamp = imresize(yImage_reduced, 2);
+yImage_reduced = imresize(Y, 1/2, "bilinear");
+yImage_upsamp = imresize(yImage_reduced, 2, "bilinear");
 
 recombined_2 = cat(3, yImage_upsamp, Cb, Cr);
 recombined_2_RGB = ycbcr2rgb(recombined_2);

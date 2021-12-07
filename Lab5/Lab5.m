@@ -7,7 +7,7 @@ RGB = imread('peppers.png');
 YCBCR = rgb2ycbcr(RGB);
 [Y, Cb, Cr] = imsplit(YCBCR);
 
-% Display the original & the various different Y, Cb and Cr
+% Display the various different Y, Cb and Cr
 figure;
 imshow(Y, []);
 title('Y Image', 'FontSize', 16);
@@ -83,7 +83,10 @@ figure;
 imshow(recombined_2_RGB);
 title('Recombined 2');
 
-%% 3 Colour Segmentation - R2021a cannot run this section, only R2021b works. R2021a gives error: Undefined function 'kmeans' for input arguments of type 'double'.
+%% 3 Colour Segmentation
+% NOTE: R2021a cannot run this section, only R2021b works. 
+%R2021a gives error: Undefined function 'kmeans' for input arguments of type 'double'.
+
 f = imread("peppers.png");
 % Create a color transformation structure that defines an sRGB to L*a*b* conversion.
 C = makecform('srgb2lab');
@@ -195,7 +198,7 @@ for i = 1:size(P1,2)
     unquantized_DCT = round(blkproc(quantized_DCT, [8 8], 'x.*P1', P1(i)*Z));
     reconstruct_Z = floor(blkproc(unquantized_DCT, [8 8], 'P1*x*P2',T',T))+128;
 
-%     figure
-%     imshow(reconstruct_Z,[]); title(sprintf('reconstruct %dZ', P1(i)));
+    figure
+    imshow(reconstruct_Z,[]); title(sprintf('reconstruct %dZ', P1(i)));
     reconstruct_psnr = psnr(reconstruct_Z,f,255)
 end
